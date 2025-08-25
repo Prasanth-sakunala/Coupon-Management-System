@@ -1,176 +1,106 @@
-# Coupon Management System
+# Coupon Management System 🏷️
 
-## Overview
+## 📌 Overview
 
-This project is a Spring Boot-based coupon management system that supports creation, retrieval, update, deletion, and application of various coupon types to shopping carts. The system is designed to be extensible, maintainable, and efficient, with clear separation of concerns and robust DTOs.
+A Spring Boot–based backend application for managing and applying coupons in an e‑commerce environment.  
+Supports cart‑wide, product‑specific, and Buy X Get Y (BXGY) coupons, with a clean, extensible architecture and well‑structured DTOs for maintainability.
 
 ---
 
-## Implemented Use Cases
+## ✅ Implemented Features
 
-### 1. Cart-wise Coupon
-- **Description:** Applies a percentage discount to the entire cart if the cart total exceeds a specified threshold.
-- **Example:**  
-  ```json
-  {
-    "type": "cart-wise",
-    "details": {
-      "threshold": 100,
-      "discount": 10
-    }
-  }
-  ```
+### 1. Cart‑Wise Coupon
+Applies a percentage discount to the entire cart if the total exceeds a given threshold.
 
-### 2. Product-wise Coupon
-- **Description:** Applies a percentage discount to a specific product in the cart.
-- **Example:**  
-  ```json
-  {
-    "type": "product-wise",
-    "details": {
-      "product_id": 1,
-      "discount": 20
-    }
-  }
-  ```
+**Example:**
+```json
+{
+  "type": "cart-wise",
+  "details": { "threshold": 100, "discount": 10 }
+}
+```
 
-### 3. BXGY (Buy X Get Y) Coupon
-- **Description:** Offers free products when certain quantities of other products are purchased, with a repetition limit.
-- **Example:**  
-  ```json
-  {
-    "type": "bxgy",
-    "details": {
-      "buy_products": [
-        {"product_id": 1, "quantity": 3},
-        {"product_id": 2, "quantity": 3}
-      ],
-      "get_products": [
-        {"product_id": 3, "quantity": 1}
-      ],
-      "repition_limit": 2
-    }
+---
+
+### 2. Product‑Wise Coupon
+Applies a percentage discount to a specific product in the cart.
+
+**Example:**
+```json
+{
+  "type": "product-wise",
+  "details": { "product_id": 1, "discount": 20 }
+}
+```
+
+---
+
+### 3. BXGY Coupon
+Provides free products when certain quantities of other products are purchased, with a repetition limit.
+
+**Example:**
+```json
+{
+  "type": "bxgy",
+  "details": {
+    "buy_products": [
+      { "product_id": 1, "quantity": 3 },
+      { "product_id": 2, "quantity": 3 }
+    ],
+    "get_products": [
+      { "product_id": 3, "quantity": 1 }
+    ],
+    "repition_limit": 2
   }
-  ```
+}
+```
+
+---
 
 ### 4. Coupon CRUD Operations
-- **Create, update, delete, and retrieve coupons** via REST endpoints.
+Full REST API for creating, updating, retrieving, and deleting coupons.
+
+---
 
 ### 5. Applicable Coupons Calculation
-- **Endpoint:** `POST /applicable-coupons`
-- **Description:** Returns all coupons applicable to a given cart and calculates the discount for each.
+`POST /applicable-coupons` — returns all coupons applicable to a cart with their calculated discounts.
+
+---
 
 ### 6. Apply Coupon to Cart
-- **Endpoint:** `POST /apply-coupon/{id}`
-- **Description:** Applies a specific coupon to the cart and returns the updated cart with discounted prices.
+`POST /apply-coupon/{id}` — applies a specific coupon to the cart and returns the updated prices.
 
 ---
 
-## Possible Additional Use Cases (Not Yet Implemented)
+## 💡 Potential Future Enhancements
 
-- Coupon validity period (start/end date)
-- Coupon usage limits (per user, per coupon, global)
-- Minimum/maximum discount limits
-- User-specific coupons (targeted promotions)
+- Coupon validity period (start/end dates)
+- Usage limits (per user / per coupon / global)
+- Minimum and maximum discount limits
+- User‑specific or targeted promotions
 - Coupon codes (manual entry)
 - Coupon status (active/inactive/expired)
-- Coupons for shipping or other fees
-- Coupons with fixed amount discounts (currently only percentage supported)
+- Shipping‑fee discounts
+- Fixed‑amount discounts (currently only percentage supported)
 
 ---
 
-## API Endpoints
+## 🔗 API Endpoints
 
-### Coupon Endpoints
+### 📄 Coupon Endpoints
+- `POST /coupons` — Create a new coupon
+- `GET /coupons` — Retrieve all coupons
+- `GET /coupons/{id}` — Retrieve coupon by ID
+- `PUT /coupons/{id}` — Update coupon by ID
+- `DELETE /coupons/{id}` — Delete coupon by ID
 
-- `POST /coupons`  
-  Create a new coupon.
-
-- `GET /coupons`  
-  Retrieve all coupons.
-
-- `GET /coupons/{id}`  
-  Retrieve a specific coupon by its ID.
-
-- `PUT /coupons/{id}`  
-  Update a specific coupon by its ID.
-
-- `DELETE /coupons/{id}`  
-  Delete a specific coupon by its ID.
-
-### Coupon Application Endpoints
-
-- `POST /applicable-coupons`  
-  Request body:  
-  ```json
-  {
-    "cart": {
-      "items": [
-        {"product_id": 1, "quantity": 6, "price": 50},
-        {"product_id": 2, "quantity": 3, "price": 30},
-        {"product_id": 3, "quantity": 2, "price": 25}
-      ]
-    }
-  }
-  ```
-  Response:  
-  ```json
-  {
-    "applicable_coupons": [
-      {
-        "coupon_id": 1,
-        "type": "cart-wise",
-        "discount": 40
-      },
-      {
-        "coupon_id": 3,
-        "type": "bxgy",
-        "discount": 50
-      }
-    ]
-  }
-  ```
-
-- `POST /apply-coupon/{id}`  
-  Request body:  
-  ```json
-  {
-    "cart": {
-      "items": [
-        {"product_id": 1, "quantity": 6, "price": 50},
-        {"product_id": 2, "quantity": 3, "price": 30},
-        {"product_id": 3, "quantity": 2, "price": 25}
-      ]
-    }
-  }
-  ```
-  Response:  
-  ```json
-  {
-    "updated_cart": {
-      "items": [
-        {"product_id": 1, "quantity": 6, "price": 50, "total_discount": 0},
-        {"product_id": 2, "quantity": 3, "price": 30, "total_discount": 0},
-        {"product_id": 3, "quantity": 4, "price": 25, "total_discount": 50}
-      ],
-      "total_price": 490,
-      "total_discount": 50,
-      "final_price": 440
-    }
-  }
-  ```
+### 🛒 Coupon Application Endpoints
+- `POST /applicable-coupons` — Get applicable coupons for a cart
+- `POST /apply-coupon/{id}` — Apply a specific coupon to a cart
 
 ---
 
-## Limitations & Future Work
-
-- Only three coupon types are implemented.
-- No support for coupon validity periods, or user-specific constraints.
-- Only percentage discounts are supported.
-
----
-
-## Code Quality & Structure
+## 📂 Code Structure
 
 - **Controllers:** [CouponController.java](src/main/java/com/prasanth/coupon_manage/controller/CouponController.java), [CouponApplicationController.java](src/main/java/com/prasanth/coupon_manage/controller/CouponApplicationController.java)
 - **Services:** [CouponService.java](src/main/java/com/prasanth/coupon_manage/services/CouponService.java), [CouponApplicationService.java](src/main/java/com/prasanth/coupon_manage/services/CouponApplicationService.java)
@@ -179,13 +109,19 @@ This project is a Spring Boot-based coupon management system that supports creat
 
 ---
 
-## How to Run
+## 🚀 How to Run
 
-1. Configure your database in `src/main/resources/application.properties`.
-2. Build and run the project using Maven:
-   ```sh
-   ./mvnw spring-boot:run
-   ```
-3. Use the API endpoints as described above.
+- Configure DB in `application.properties`
+- Build & run with Maven:
+  ```sh
+  ./mvnw spring-boot:run
+  ```
+- Access API endpoints as per the documentation above
 
 ---
+
+## 📌 Notes
+
+- Only three coupon types currently implemented
+- Percentage‑based discounts only
+- Detailed test cases and example payloads included
